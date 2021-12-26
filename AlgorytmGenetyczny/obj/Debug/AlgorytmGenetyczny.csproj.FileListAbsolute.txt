@@ -1,0 +1,12 @@
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\bin\Debug\AlgorytmGenetyczny.exe.config
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\bin\Debug\AlgorytmGenetyczny.exe
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\bin\Debug\AlgorytmGenetyczny.pdb
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.csprojAssemblyReference.cache
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.Form1.resources
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.Properties.Resources.resources
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.csproj.GenerateResource.cache
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.csproj.CoreCompileInputs.cache
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.exe
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.pdb
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\bin\Debug\BigInteger.dll
+C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.csproj.CopyComplete
