@@ -4,10 +4,17 @@ namespace AlgorytmGenetyczny
 {
     public static class Helper
     {
-        private static string ConvertDecimalToBinary(int number)
+        private static string ConvertDecimalToBinary(int bitSize, int number)
         {
             var binaryNumber = Convert.ToString(number, 2);
-            return binaryNumber;
+            var binary = "";
+            for (var i = 0; i < bitSize - binaryNumber.Length; i++)
+            {
+                binary += "0";
+            }
+
+            binary += binaryNumber;
+            return binary;
         }
 
         private static int ConvertBinaryToDecimal(string number)
@@ -53,9 +60,9 @@ namespace AlgorytmGenetyczny
             return binary;
         }
 
-        public static string ConvertDecimalToGray(int number)
+        public static string ConvertDecimalToGray(int bitSize, int number)
         {
-            var decimalToBinary = ConvertDecimalToBinary(number);
+            var decimalToBinary = ConvertDecimalToBinary(bitSize, number);
             return ConvertBinaryToGray(decimalToBinary);
         }
 

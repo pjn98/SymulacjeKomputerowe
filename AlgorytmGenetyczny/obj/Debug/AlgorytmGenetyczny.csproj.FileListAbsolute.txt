@@ -8,5 +8,3 @@ C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\Algor
 C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.csproj.CoreCompileInputs.cache
 C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.exe
 C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.pdb
-C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\bin\Debug\BigInteger.dll
-C:\Users\ja\source\repos\SymulacjeKomputerowe\AlgorytmGenetyczny\obj\Debug\AlgorytmGenetyczny.csproj.CopyComplete
