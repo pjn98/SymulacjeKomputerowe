@@ -1,7 +1,10 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 
 namespace AlgorytmGenetyczny
 {
@@ -9,14 +12,13 @@ namespace AlgorytmGenetyczny
     {
         private readonly Random _random = new Random();
 
-        public void Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder)
+        public List<IndividualDto> Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize)
         {
             var pool = CreatePool(poolSize, bitSize, leftBorder, rightBorder);
-            foreach (var individual in pool)
-            {
-            }
 
-            var newPool = new List<IndividualDto>();
+            var newPool = GetPreserverPool(pool, preservedSize, tournamentSize);
+
+            return newPool;
         }
 
         public List<IndividualDto> CreatePool(int poolSize, int bitSize, int leftBorder, int rightBorder)
@@ -25,6 +27,21 @@ namespace AlgorytmGenetyczny
             for (var i = 0; i < poolSize; i++) individualList.Add(CreateIndividual(bitSize, leftBorder, rightBorder));
 
             return individualList;
+        }
+
+        private List<IndividualDto> GetPreserverPool(List<IndividualDto> pool, int preservedSize, int tournamentSize)
+        {
+            var bestIndividual = HotDeckOperator(pool);
+            pool.Remove(bestIndividual);
+            var newPool = new List<IndividualDto> { bestIndividual };
+            for (var i = 0; i < preservedSize - 1; i++)
+            {
+                var winner = TournamentOperator(pool, tournamentSize);
+                newPool.Add(winner);
+                pool.Remove(winner);
+            }
+
+            return newPool;
         }
 
         private IndividualDto CreateIndividual(int bitSize, int leftBorder, int rightBorder)
@@ -79,9 +96,11 @@ namespace AlgorytmGenetyczny
             return individualList.OrderBy(x => x.AdaptationFunctionValue).FirstOrDefault();
         }
 
-        private List<IndividualDto> TournamentOperator(List<IndividualDto> individualList)
+        private IndividualDto TournamentOperator(List<IndividualDto> individualList, int tournamentSize)
         {
-            return null;
+            var tournamentParticipants = GetTournamentParticipants(individualList, tournamentSize);
+            var tournamentWinner = HotDeckOperator(tournamentParticipants);
+            return tournamentWinner;
         }
 
         public List<IndividualDto> SinglePointMutation(List<IndividualDto> individualList, int bitSize, int leftBorder, int rightBorder)
@@ -96,6 +115,9 @@ namespace AlgorytmGenetyczny
                     {Helper.ConvertGrayToDecimal(individual.ParameterList[0]), Helper.ConvertGrayToDecimal(individual.ParameterList[1])};
                 var newParameterValueList = GetNewParametersValue(oldParameterValueList, leftBorder, rightBorder, bitSize);
                 var adaptationFunctionValue = GetAdaptationFunctionValue(newParameterValueList);
+                individual.OldParameterValueList = oldParameterValueList;
+                individual.NewParameterValueList = newParameterValueList;
+                individual.AdaptationFunctionValue = adaptationFunctionValue;
             }
 
             return individualList;
@@ -106,6 +128,34 @@ namespace AlgorytmGenetyczny
             var chars = input.ToCharArray();
             chars[index] = chars[index] == '0' ? '1' : '0';
             return new string(chars);
+        }
+
+        private List<IndividualDto> GetTournamentParticipants(List<IndividualDto> parentPool, int tournamentSize)
+        {
+            var randomNumbersList = new List<int>();
+            var tournamentParticipants = new List<IndividualDto>();
+            while (tournamentParticipants.Count != tournamentSize)
+            {
+                var number = _random.Next(0, parentPool.Count);
+                if (!randomNumbersList.Contains(number))
+                {
+                    randomNumbersList.Add(number);
+                    tournamentParticipants.Add(parentPool[number]);
+                }
+            }
+
+            return tournamentParticipants;
+        }
+
+        public static T Clone<T>(T obj)
+        {
+            using (var stream = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(stream, obj);
+                stream.Position = 0;
+                return (T)formatter.Deserialize(stream);
+            };
         }
     }
 }

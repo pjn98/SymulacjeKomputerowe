@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AlgorytmGenetyczny
 {
+    [Serializable]
     public class IndividualDto
     {
         public List<string> ParameterList { get; set; }
