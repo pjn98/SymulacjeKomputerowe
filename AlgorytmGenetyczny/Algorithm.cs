@@ -1,10 +1,8 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 
 namespace AlgorytmGenetyczny
 {
@@ -12,11 +10,20 @@ namespace AlgorytmGenetyczny
     {
         private readonly Random _random = new Random();
 
-        public List<IndividualDto> Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize)
+        public List<IndividualDto> Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize, int newGenotypeSize)
         {
+            bitSize--;
             var pool = CreatePool(poolSize, bitSize, leftBorder, rightBorder);
+            var newPool = new List<IndividualDto>();
+            for (var i = 0; i < iterations; i++)
+            {
+                newPool = GetPreservedPool(pool, preservedSize, tournamentSize);
+                var newGenotypePool =
+                    GetNewGenotypePool(newPool, bitSize, newGenotypeSize, leftBorder, rightBorder);
+                newGenotypePool.ForEach(item => newPool.Add(item));
 
-            var newPool = GetPreserverPool(pool, preservedSize, tournamentSize);
+                pool = newPool;
+            }
 
             return newPool;
         }
@@ -29,7 +36,7 @@ namespace AlgorytmGenetyczny
             return individualList;
         }
 
-        private List<IndividualDto> GetPreserverPool(List<IndividualDto> pool, int preservedSize, int tournamentSize)
+        private List<IndividualDto> GetPreservedPool(List<IndividualDto> pool, int preservedSize, int tournamentSize)
         {
             var bestIndividual = HotDeckOperator(pool);
             pool.Remove(bestIndividual);
@@ -43,6 +50,40 @@ namespace AlgorytmGenetyczny
 
             return newPool;
         }
+
+        private List<IndividualDto> GetNewGenotypePool(List<IndividualDto> pool, int bitSize, int newGenotypeSize, int leftBorder, int rightBorder)
+        {
+            var newPool = new List<IndividualDto>();
+
+            for (var i = 0; i < newGenotypeSize; i++)
+            {
+                var parents = GetParticipants(pool, 2);
+                var point = _random.Next(0, bitSize);
+
+                var parameterX = string.Concat(parents[0].ParameterList[0].Substring(0, point),
+                    parents[1].ParameterList[0].Substring(point, bitSize - point));
+                var parameterY = string.Concat(parents[0].ParameterList[1].Substring(0, point),
+                    parents[1].ParameterList[1].Substring(point, bitSize - point));
+
+                var parameterList = new List<string> { parameterX, parameterY };
+                parameterList = SinglePointMutation(parameterList, bitSize);
+                var oldParameterValueList = new List<int>
+                    {Helper.ConvertGrayToDecimal(parameterList[0]), Helper.ConvertGrayToDecimal(parameterList[1])};
+                var newParameterValueList = GetNewParametersValue(oldParameterValueList, leftBorder, rightBorder, bitSize);
+                var adaptationFunctionValue = GetAdaptationFunctionValue(newParameterValueList);
+                newPool.Add(new IndividualDto
+                {
+                    ParameterList = parameterList,
+                    OldParameterValueList = oldParameterValueList,
+                    NewParameterValueList = newParameterValueList,
+                    AdaptationFunctionValue = adaptationFunctionValue
+                });
+            }
+
+            return newPool;
+        }
+
+
 
         private IndividualDto CreateIndividual(int bitSize, int leftBorder, int rightBorder)
         {
@@ -76,11 +117,11 @@ namespace AlgorytmGenetyczny
                    2 * parameterValueList[0] + Math.Pow(parameterValueList[1], 2);
         }
 
-        private List<double> GetNewParametersValue(List<int> OldParameterValueList, int leftBorder, int rightBorder,
+        private List<double> GetNewParametersValue(List<int> oldParameterValueList, int leftBorder, int rightBorder,
             int bitSize)
         {
-            var oldValueX = OldParameterValueList[0];
-            var oldValueY = OldParameterValueList[1];
+            var oldValueX = oldParameterValueList[0];
+            var oldValueY = oldParameterValueList[1];
             var oldMinValue = 0;
             var oldMaxValue = Math.Pow(2, bitSize) - 1;
             var newX = (oldValueX - oldMinValue) / (oldMaxValue - oldMinValue) * (rightBorder - leftBorder) +
@@ -98,29 +139,19 @@ namespace AlgorytmGenetyczny
 
         private IndividualDto TournamentOperator(List<IndividualDto> individualList, int tournamentSize)
         {
-            var tournamentParticipants = GetTournamentParticipants(individualList, tournamentSize);
+            var tournamentParticipants = GetParticipants(individualList, tournamentSize);
             var tournamentWinner = HotDeckOperator(tournamentParticipants);
             return tournamentWinner;
         }
 
-        public List<IndividualDto> SinglePointMutation(List<IndividualDto> individualList, int bitSize, int leftBorder, int rightBorder)
+        public List<string> SinglePointMutation(List<string> parameterList, int bitSize)
         {
-            foreach (var individual in individualList)
-            {
-                var bitOnParameterX = _random.Next(0, bitSize);
-                var bitOnParameterY = _random.Next(0, bitSize);
-                individual.ParameterList[0] = ReplaceAt(individual.ParameterList[0], bitOnParameterX);
-                individual.ParameterList[1] = ReplaceAt(individual.ParameterList[1], bitOnParameterY);
-                var oldParameterValueList = new List<int>
-                    {Helper.ConvertGrayToDecimal(individual.ParameterList[0]), Helper.ConvertGrayToDecimal(individual.ParameterList[1])};
-                var newParameterValueList = GetNewParametersValue(oldParameterValueList, leftBorder, rightBorder, bitSize);
-                var adaptationFunctionValue = GetAdaptationFunctionValue(newParameterValueList);
-                individual.OldParameterValueList = oldParameterValueList;
-                individual.NewParameterValueList = newParameterValueList;
-                individual.AdaptationFunctionValue = adaptationFunctionValue;
-            }
+            var bitOnParameterX = _random.Next(0, bitSize);
+            var bitOnParameterY = _random.Next(0, bitSize);
+            parameterList[0] = ReplaceAt(parameterList[0], bitOnParameterX);
+            parameterList[1] = ReplaceAt(parameterList[1], bitOnParameterY);
 
-            return individualList;
+            return parameterList;
         }
 
         private static string ReplaceAt(string input, int index)
@@ -130,7 +161,7 @@ namespace AlgorytmGenetyczny
             return new string(chars);
         }
 
-        private List<IndividualDto> GetTournamentParticipants(List<IndividualDto> parentPool, int tournamentSize)
+        private List<IndividualDto> GetParticipants(List<IndividualDto> parentPool, int tournamentSize)
         {
             var randomNumbersList = new List<int>();
             var tournamentParticipants = new List<IndividualDto>();
@@ -145,17 +176,6 @@ namespace AlgorytmGenetyczny
             }
 
             return tournamentParticipants;
-        }
-
-        public static T Clone<T>(T obj)
-        {
-            using (var stream = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, obj);
-                stream.Position = 0;
-                return (T)formatter.Deserialize(stream);
-            };
         }
     }
 }

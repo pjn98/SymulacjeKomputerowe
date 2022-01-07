@@ -24,16 +24,17 @@ namespace AlgorytmGenetyczny
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var poolSize = 8;
+            var poolSize = 5;
+            var preservedSize = 2;
+            var newGenotypeSize = poolSize - preservedSize;
             var bitSize = 32;
             var leftBorder = -4;
             var rightBorder = 2;
-            var iterations = 10;
+            var iterations = 200;
             var tournamentSize = 4;
-            var preservedSize = 4;
             var alg = new Algorithm();
             var population = alg.Simulation(poolSize, bitSize, iterations, leftBorder, rightBorder, preservedSize,
-                tournamentSize);
+                tournamentSize, newGenotypeSize);
         }
     }
 }

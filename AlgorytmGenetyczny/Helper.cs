@@ -50,7 +50,7 @@ namespace AlgorytmGenetyczny
 
             binary += number[0];
 
-            for (int i = 1; i < number.Length; i++)
+            for (var i = 1; i < number.Length; i++)
             {
                 if (number[i] == '0')
                     binary += binary[i - 1];
