@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -22,19 +16,26 @@ namespace AlgorytmGenetyczny
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            var poolSize = 5;
-            var preservedSize = 2;
+            var poolSize = 9;
+            var preservedSize = 4;
             var newGenotypeSize = poolSize - preservedSize;
-            var bitSize = 32;
+            var bitSize = 31;
             var leftBorder = -4;
             var rightBorder = 2;
             var iterations = 200;
             var tournamentSize = 4;
             var alg = new Algorithm();
-            var population = alg.Simulation(poolSize, bitSize, iterations, leftBorder, rightBorder, preservedSize,
+            var populations = alg.Simulation(poolSize, bitSize, iterations, leftBorder, rightBorder, preservedSize,
                 tournamentSize, newGenotypeSize);
+
+            var chart = new ChartHelper();
+            foreach (var population in populations)
+            {
+                chart.GenerateChart(chart1, population);
+                await Task.Delay(200);
+            }
         }
     }
 }

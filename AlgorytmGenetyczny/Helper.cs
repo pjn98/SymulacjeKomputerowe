@@ -22,11 +22,12 @@ namespace AlgorytmGenetyczny
             var decimalNumber = Convert.ToInt32(number, 2);
             return decimalNumber;
         }
-        private static char xor_c(char a, char b)
+
+        private static char XorC(char a, char b)
         {
             return (a == b) ? '0' : '1';
         }
-        private static char flip(char c)
+        private static char Flip(char c)
         {
             return (c == '0') ? '1' : '0';
         }
@@ -37,7 +38,7 @@ namespace AlgorytmGenetyczny
             gray += number[0];
             for (var i = 1; i < number.Length; i++)
             {
-                gray += xor_c(number[i - 1],
+                gray += XorC(number[i - 1],
                     number[i]);
             }
 
@@ -55,7 +56,7 @@ namespace AlgorytmGenetyczny
                 if (number[i] == '0')
                     binary += binary[i - 1];
                 else
-                    binary += flip(binary[i - 1]);
+                    binary += Flip(binary[i - 1]);
             }
             return binary;
         }

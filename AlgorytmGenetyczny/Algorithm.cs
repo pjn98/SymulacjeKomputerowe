@@ -10,22 +10,24 @@ namespace AlgorytmGenetyczny
     {
         private readonly Random _random = new Random();
 
-        public List<IndividualDto> Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize, int newGenotypeSize)
+        public List<List<IndividualDto>> Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize, int newGenotypeSize)
         {
-            bitSize--;
+            //bitSize--;
+            var pools = new List<List<IndividualDto>>();
             var pool = CreatePool(poolSize, bitSize, leftBorder, rightBorder);
-            var newPool = new List<IndividualDto>();
+            pools.Add(Clone(pool));
             for (var i = 0; i < iterations; i++)
             {
-                newPool = GetPreservedPool(pool, preservedSize, tournamentSize);
+                var newPool = GetPreservedPool(pool, preservedSize, tournamentSize);
                 var newGenotypePool =
                     GetNewGenotypePool(newPool, bitSize, newGenotypeSize, leftBorder, rightBorder);
                 newGenotypePool.ForEach(item => newPool.Add(item));
 
+                pools.Add(Clone(newPool));
                 pool = newPool;
             }
 
-            return newPool;
+            return pools;
         }
 
         public List<IndividualDto> CreatePool(int poolSize, int bitSize, int leftBorder, int rightBorder)
@@ -176,6 +178,17 @@ namespace AlgorytmGenetyczny
             }
 
             return tournamentParticipants;
+        }
+
+        public static T Clone<T>(T obj)
+        {
+            using (var stream = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(stream, obj);
+                stream.Position = 0;
+                return (T)formatter.Deserialize(stream);
+            };
         }
     }
 }
