@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,7 +24,7 @@ namespace AlgorytmGenetyczny
             var poolSize = 9;
             var preservedSize = 4;
             var newGenotypeSize = poolSize - preservedSize;
-            var bitSize = 31;
+            var bitSize = 32;
             var leftBorder = -4;
             var rightBorder = 2;
             var iterations = 200;
@@ -31,11 +34,32 @@ namespace AlgorytmGenetyczny
                 tournamentSize, newGenotypeSize);
 
             var chart = new ChartHelper();
-            foreach (var population in populations)
+            foreach (var population in populations.Populations)
             {
                 chart.GenerateChart(chart1, population);
                 await Task.Delay(200);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var poolSize = 9;
+            var preservedSize = 4;
+            var newGenotypeSize = poolSize - preservedSize;
+            var bitSize = 32;
+            var leftBorder = -4;
+            var rightBorder = 2;
+            var iterations = 1000;
+            var tournamentSize = 4;
+            var alg = new Algorithm();
+            var iterationList = new List<string>();
+            for (var i = 0; i < 10000; i++)
+            {
+                var populations = alg.Simulation(poolSize, bitSize, iterations, leftBorder, rightBorder, preservedSize,
+                    tournamentSize, newGenotypeSize);
+                iterationList.Add(populations.Iterations.ToString());
+            }
+            File.WriteAllLines("LiczbaSymulacji.txt", iterationList);
         }
     }
 }

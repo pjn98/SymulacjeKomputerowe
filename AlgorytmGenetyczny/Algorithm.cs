@@ -10,24 +10,33 @@ namespace AlgorytmGenetyczny
     {
         private readonly Random _random = new Random();
 
-        public List<List<IndividualDto>> Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize, int newGenotypeSize)
+        public SimulationDto Simulation(int poolSize, int bitSize, int iterations, int leftBorder, int rightBorder, int preservedSize, int tournamentSize, int newGenotypeSize)
         {
-            //bitSize--;
+            var numberOfIterations = 0;
             var pools = new List<List<IndividualDto>>();
-            var pool = CreatePool(poolSize, bitSize, leftBorder, rightBorder);
+            var pool = CreatePool(poolSize, bitSize-1, leftBorder, rightBorder);
             pools.Add(Clone(pool));
             for (var i = 0; i < iterations; i++)
             {
+                if (pool.OrderBy(x => x.AdaptationFunctionValue).FirstOrDefault().AdaptationFunctionValue > -1.33333)
+                    numberOfIterations++;
+                else
+                    break;
+
                 var newPool = GetPreservedPool(pool, preservedSize, tournamentSize);
                 var newGenotypePool =
-                    GetNewGenotypePool(newPool, bitSize, newGenotypeSize, leftBorder, rightBorder);
+                    GetNewGenotypePool(newPool, bitSize-1, newGenotypeSize, leftBorder, rightBorder);
                 newGenotypePool.ForEach(item => newPool.Add(item));
 
                 pools.Add(Clone(newPool));
                 pool = newPool;
             }
 
-            return pools;
+            return new SimulationDto
+            {
+                Populations = pools,
+                Iterations = numberOfIterations
+            };
         }
 
         public List<IndividualDto> CreatePool(int poolSize, int bitSize, int leftBorder, int rightBorder)
@@ -84,8 +93,6 @@ namespace AlgorytmGenetyczny
 
             return newPool;
         }
-
-
 
         private IndividualDto CreateIndividual(int bitSize, int leftBorder, int rightBorder)
         {
